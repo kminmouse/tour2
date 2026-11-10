@@ -217,19 +217,34 @@
     // -------------------------------------------------------------------------
     // 4. 공공데이터 API 호출
     // -------------------------------------------------------------------------
+// 공공데이터포털 마이페이지에서 발급받은 인증키
+const TOUR_API_KEY = "83048396a6093d92be2298098e7d3737f2cc077333bc6a795268044d5ebb44c2";
+
 async function fetchTourData(areaCode) {
   const listEl = document.getElementById('tourList');
   listEl.innerHTML = `<p class="empty-msg">데이터를 불러오는 중입니다...</p>`;
 
-  // encodeURIComponent 제거하고 TOUR_API_KEY를 직접 대입합니다.
-  const endpoint = `https://apis.data.go.kr/B551011/KorService2/areaBasedList1`
-    + `?serviceKey=${TOUR_API_KEY}`
-    + `&numOfRows=16&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json`
-    + `&areaCode=${areaCode}`;
+  // 1. serviceKey를 URL 직후에 결합 (자동 인코딩 변형 방지)
+  const baseUrl = `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=${TOUR_API_KEY}`;
+
+  // 2. 필수 매개변수 설정
+  const params = [
+    'numOfRows=16',
+    'pageNo=1',
+    'MobileOS=ETC',
+    'MobileApp=TestApp',
+    '_type=json',
+    `areaCode=${areaCode}`
+  ].join('&');
+
+  const endpoint = `${baseUrl}&${params}`;
 
   try {
     const res = await fetch(endpoint);
-    if (!res.ok) throw new Error(`API 응답 실패 (상태: ${res.status})`);
+    
+    if (!res.ok) {
+      throw new Error(`API 요청 실패 (HTTP 상태 코드: ${res.status})`);
+    }
 
     const data = await res.json();
     const items = data.response?.body?.items?.item;
@@ -243,11 +258,10 @@ async function fetchTourData(areaCode) {
     currentTourItems = Array.isArray(items) ? items : [items];
     renderTourList(currentTourItems);
   } catch (err) {
-    console.error(err);
-    listEl.innerHTML = `<p class="empty-msg">데이터 조회 중 오류가 발생했습니다. API 키 및 네트워크를 확인하세요.</p>`;
+    console.error("에러 세부 정보:", err);
+    listEl.innerHTML = `<p class="empty-msg">데이터 조회 중 오류가 발생했습니다. 콘솔 창을 확인하세요.</p>`;
   }
 }
-
     // -------------------------------------------------------------------------
     // 5. 뷰 렌더링 함수
     // -------------------------------------------------------------------------
