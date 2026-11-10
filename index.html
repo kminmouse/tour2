@@ -222,7 +222,7 @@ async function fetchTourData(areaCode) {
   listEl.innerHTML = `<p class="empty-msg">데이터를 불러오는 중입니다...</p>`;
 
   // encodeURIComponent 제거하고 TOUR_API_KEY를 직접 대입합니다.
-  const endpoint = `https://apis.data.go.kr/B551011/KorService1/areaBasedList1`
+  const endpoint = `https://apis.data.go.kr/B551011/KorService2/areaBasedList1`
     + `?serviceKey=${TOUR_API_KEY}`
     + `&numOfRows=16&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json`
     + `&areaCode=${areaCode}`;
